@@ -11,35 +11,84 @@ This repository contains:
 
 ## Prerequisites
 
-- [Supabase CLI](https://supabase.com/docs/guides/cli) (`npm install -g supabase`)
 - [Docker](https://www.docker.com/get-started) (required for local development)
+- [Node.js](https://nodejs.org/) v18+ (required to install the Supabase CLI)
+- [Supabase CLI](https://supabase.com/docs/guides/cli) (`npm install -g supabase`)
+
+---
+
+## Installing Prerequisites on Linux (clean environment)
+
+Run the following commands on a fresh Linux machine to install all required dependencies.
+
+### 1. Install Docker Engine
+
+```bash
+# Install Docker using the official convenience script
+curl -fsSL https://get.docker.com | sh
+
+# Allow your user to run Docker without sudo
+sudo usermod -aG docker $USER
+
+# Apply the new group membership without logging out
+newgrp docker
+
+# Verify Docker is running
+docker run hello-world
+```
+
+### 2. Install Node.js (via nvm)
+
+```bash
+# Install nvm (Node Version Manager)
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+# Reload your shell profile (use ~/.zshrc if you are using zsh, etc.)
+source ~/.bashrc
+
+# Install the latest LTS release of Node.js
+nvm install --lts
+
+# Verify installation
+node --version
+npm --version
+```
+
+### 3. Install the Supabase CLI
+
+```bash
+npm install -g supabase
+
+# Verify installation
+supabase --version
+```
 
 ---
 
 ## Local Development Setup
 
 ```bash
-# 1. Log in to Supabase CLI
+# 1. Clone the repository and enter the project directory
+git clone https://github.com/pcdev333/judy-server.git
+cd judy-server
+
+# 2. Copy the example environment file and fill in your values
+cp .env.example .env
+
+# 3. Log in to Supabase CLI
 supabase login
 
-# 2. (Already done) Initialise the project
-supabase init
-
-# 3. Start local Supabase stack (requires Docker)
+# 4. Start the local Supabase stack (requires Docker)
 supabase start
 
-# 4. Apply migrations
+# 5. Apply migrations and seed data
 supabase db reset
 
-# 5. Serve the Edge Function locally
+# 6. Serve the Edge Function locally
 supabase functions serve parseWorkout
 ```
 
-Copy `.env.example` to `.env` and fill in your values before running the Edge Function locally:
-
-```bash
-cp .env.example .env
-```
+> **Note:** `supabase start` will print local API URLs and keys to your terminal once the stack is ready. You can use those values to populate your `.env` file for local testing.
 
 ---
 
