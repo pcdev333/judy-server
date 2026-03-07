@@ -4,7 +4,7 @@ Supabase backend for **Judy** — a mobile-first workout execution app.
 
 This repository contains:
 - PostgreSQL database migrations (schema + Row Level Security)
-- Supabase Edge Functions (server-side OpenAI integration)
+- Supabase Edge Functions (server-side Google AI integration)
 - Local development configuration
 
 ---
@@ -101,8 +101,8 @@ npx supabase db push
 # 2. Deploy the Edge Function
 npx supabase functions deploy parseWorkout
 
-# 3. Set the OpenAI secret (NEVER commit this value)
-npx supabase secrets set OPENAI_API_KEY=sk-...
+# 3. Set the Google AI secret (NEVER commit this value)
+npx supabase secrets set GOOGLE_AI_API_KEY=...
 ```
 
 ---
@@ -168,7 +168,7 @@ Individual set/rep logs recorded during a workout session.
 
 **POST** `/functions/v1/parseWorkout`
 
-Parses raw workout text into structured JSON using OpenAI `gpt-4o-mini`.
+Parses raw workout text into structured JSON using Google AI Gemini `gemini-1.5-flash`.
 
 **Headers**
 ```
@@ -192,7 +192,7 @@ Content-Type: application/json
 }
 ```
 
-The function validates the caller's Supabase JWT before forwarding to OpenAI. The OpenAI API key is stored as a Supabase secret and is **never** exposed to clients.
+The function validates the caller's Supabase JWT before forwarding to Google AI. The Google AI API key is stored as a Supabase secret and is **never** exposed to clients.
 
 ---
 
@@ -200,7 +200,7 @@ The function validates the caller's Supabase JWT before forwarding to OpenAI. Th
 
 - **Row Level Security (RLS)** is enabled on all tables. Every policy is scoped to `auth.uid()` so users can only access their own data.
 - `workout_logs` access is gated via a subquery through `planned_workouts`, ensuring the ownership chain is enforced even without a direct `user_id` column.
-- The **OpenAI API key** exists only as a Supabase secret (`supabase secrets set`). It is never stored in the repo or exposed to any client.
+- The **Google AI API key** exists only as a Supabase secret (`supabase secrets set`). It is never stored in the repo or exposed to any client.
 - All Edge Function requests must include a valid `Authorization: Bearer <jwt>` header issued by Supabase Auth.
 
 ---

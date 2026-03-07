@@ -140,7 +140,7 @@ Environment variables are secret values your app needs to run. They are stored i
    SUPABASE_URL=https://your-project-id.supabase.co
    SUPABASE_ANON_KEY=eyJ...your-anon-key...
    SUPABASE_SERVICE_ROLE_KEY=eyJ...your-service-role-key...
-   OPENAI_API_KEY=sk-...your-openai-key...
+   GOOGLE_AI_API_KEY=...your-google-ai-key...
    ```
    > **Where is the Service Role Key?**
    > Same place as the Anon Key — in Project Settings → API → `service_role` key. Keep this one **extra secret** — it bypasses all security rules.
@@ -210,28 +210,27 @@ This sets up the email login system so users can log in with a magic link.
 
 ---
 
-## Step 10 — Get an OpenAI API Key
+## Step 10 — Get a Google AI API Key
 
-The AI workout parser uses OpenAI. You need an API key.
+The AI workout parser uses Google AI (Gemini). You need an API key.
 
-1. Go to [https://platform.openai.com](https://platform.openai.com)
-2. Sign up or log in
-3. Click your profile icon (top right) → **"API keys"**
-4. Click **"Create new secret key"**
-5. Give it a name like `judy-app`
-6. Copy the key — it starts with `sk-`. **Save it now** — you cannot see it again after closing the dialog.
+1. Go to [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click **"Create API key"**
+4. Give it a name like `judy-app`
+5. Copy the key and **save it now** — you will need it in the next step.
 
-> **Cost note:** We use `gpt-4o-mini` which is the cheapest capable model. For personal use, costs are typically under $1/month.
+> **Cost note:** We use `gemini-1.5-flash` which has a generous free tier. For personal use, costs are typically $0/month within free limits.
 
 ---
 
-## Step 11 — Set the OpenAI Secret in Supabase
+## Step 11 — Set the Google AI Secret in Supabase
 
-The OpenAI key must be stored as a Supabase secret so it is **never** exposed to the mobile app.
+The Google AI key must be stored as a Supabase secret so it is **never** exposed to the mobile app.
 
-1. In your terminal, run (replace `sk-...` with your actual key):
+1. In your terminal, run (replace `...` with your actual key):
    ```bash
-   supabase secrets set OPENAI_API_KEY=sk-...your-key-here...
+   supabase secrets set GOOGLE_AI_API_KEY=...your-key-here...
    ```
 2. You should see `Finished setting secret` ✅
 
@@ -333,8 +332,8 @@ Use this to track your progress:
 - [ ] Step 7 — Linked CLI to Supabase project
 - [ ] Step 8 — Pushed database schema (4 tables visible in dashboard)
 - [ ] Step 9 — Configured Magic Link auth and redirect URLs
-- [ ] Step 10 — Got OpenAI API key
-- [ ] Step 11 — Set `OPENAI_API_KEY` as Supabase secret
+- [ ] Step 10 — Got Google AI API key
+- [ ] Step 11 — Set `GOOGLE_AI_API_KEY` as Supabase secret
 - [ ] Step 12 — Deployed `parseWorkout` Edge Function
 - [ ] Step 13 — Connected `judy-ui` to Supabase
 - [ ] Step 14 — Tested login with magic link ✅
