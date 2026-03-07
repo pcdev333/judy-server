@@ -117,6 +117,9 @@ Profile extension of `auth.users`. Auto-populated via trigger when a new user si
 | `id` | UUID | PK, FK → `auth.users(id)` |
 | `email` | TEXT | |
 | `created_at` | TIMESTAMPTZ | |
+| `current_streak` | INTEGER | Consecutive days with completed workouts (default 0) |
+| `longest_streak` | INTEGER | All-time personal best streak (default 0) |
+| `last_workout_date` | DATE | Most recently completed workout date, used for streak continuity |
 
 ### `workouts`
 Stores raw and parsed workout definitions.
@@ -211,4 +214,4 @@ The function validates the caller's Supabase JWT before forwarding to OpenAI. Th
 | 3 | `parseWorkout` Edge Function skeleton | ✅ Done |
 | 4 | Auth flow (Magic Link / OTP) integration | 🔜 Planned |
 | 5 | Mobile app API integration | 🔜 Planned |
-| 6 | Analytics & reporting queries | 🔜 Planned |
+| 6 | Streak tracking columns migration (`current_streak`, `longest_streak`, `last_workout_date`) | ✅ Done |
