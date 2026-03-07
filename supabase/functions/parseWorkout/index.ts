@@ -69,16 +69,16 @@ serve(async (req: Request) => {
     );
   }
 
-  // ── Call OpenAI ───────────────────────────────────────────────────────────
-  const openAiApiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!openAiApiKey) {
+  // ── Call Google AI (Gemini) ───────────────────────────────────────────────
+  const googleAiApiKey = Deno.env.get("GOOGLE_AI_API_KEY");
+  if (!googleAiApiKey) {
     return new Response(
-      JSON.stringify({ error: "OpenAI API key is not configured." }),
+      JSON.stringify({ error: "Google AI API key is not configured." }),
       { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   }
 
-  const systemPrompt = `You are a fitness assistant. Parse the following workout text into a structured JSON object.
+  const prompt = `You are a fitness assistant. Parse the following workout text into a structured JSON object.
 Return ONLY valid JSON with this structure:
 {
   "title": "string — short workout title",
@@ -92,49 +92,51 @@ Return ONLY valid JSON with this structure:
     }
   ]
 }
-Do not include any explanation, only the JSON object.`;
+Do not include any explanation, only the JSON object.
 
-  let openAiResponse: Response;
+Workout text:
+${body.raw_text}`;
+
+  let geminiResponse: Response;
   try {
-    openAiResponse = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${openAiApiKey}`,
+    geminiResponse = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": googleAiApiKey },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0,
+            responseMimeType: "application/json",
+          },
+        }),
       },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: body.raw_text },
-        ],
-        temperature: 0,
-      }),
-    });
+    );
   } catch (err) {
     return new Response(
-      JSON.stringify({ error: "Failed to reach OpenAI API.", details: String(err) }),
+      JSON.stringify({ error: "Failed to reach Google AI API.", details: String(err) }),
       { status: 502, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   }
 
-  if (!openAiResponse.ok) {
-    const errText = await openAiResponse.text();
+  if (!geminiResponse.ok) {
+    const errText = await geminiResponse.text();
     return new Response(
-      JSON.stringify({ error: "OpenAI API error.", details: errText }),
+      JSON.stringify({ error: "Google AI API error.", details: errText }),
       { status: 502, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   }
 
-  const openAiData = await openAiResponse.json();
-  const rawContent: string = openAiData?.choices?.[0]?.message?.content ?? "";
+  const geminiData = await geminiResponse.json();
+  const rawContent: string = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 
   let parsedWorkout: unknown;
   try {
     parsedWorkout = JSON.parse(rawContent);
   } catch {
     return new Response(
-      JSON.stringify({ error: "OpenAI returned invalid JSON.", raw: rawContent }),
+      JSON.stringify({ error: "Google AI returned invalid JSON.", raw: rawContent }),
       { status: 502, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
     );
   }
