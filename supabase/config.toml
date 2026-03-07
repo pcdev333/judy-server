@@ -1,8 +1,8 @@
 # A string used to distinguish different Supabase projects on the same host.
 # Defaults to the working directory name when running `supabase init`.
-[api]
 project_id = "judy"
 
+[api]
 # Port to use for the API URL.
 port = 54321
 
@@ -57,6 +57,6 @@ double_confirm_changes = true
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = false
 
-[functions]
-# Enables Edge Functions support.
+[edge_runtime]
+# Enables Edge Runtime support for Edge Functions.
 enabled = true

@@ -1,0 +1,17 @@
+.env
+node_modules/
+dist/
+coverage/
+.DS_Store
+*.log
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?   
+
+supabase/.branches/
+supabase/.cache/
+supabase/.temp/

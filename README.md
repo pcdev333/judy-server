@@ -60,7 +60,7 @@ npm --version
 npm install -g supabase
 
 # Verify installation
-supabase --version
+npx supabase --version
 ```
 
 ---
@@ -76,16 +76,16 @@ cd judy-server
 cp .env.example .env
 
 # 3. Log in to Supabase CLI
-supabase login
+npx supabase login
 
 # 4. Start the local Supabase stack (requires Docker)
-supabase start
+npx supabase start
 
 # 5. Apply migrations and seed data
-supabase db reset
+npx supabase db reset
 
 # 6. Serve the Edge Function locally
-supabase functions serve parseWorkout
+npx supabase functions serve parseWorkout
 ```
 
 > **Note:** `supabase start` will print local API URLs and keys to your terminal once the stack is ready. You can use those values to populate your `.env` file for local testing.
@@ -96,13 +96,13 @@ supabase functions serve parseWorkout
 
 ```bash
 # 1. Push migrations to your hosted project
-supabase db push
+npx supabase db push
 
 # 2. Deploy the Edge Function
-supabase functions deploy parseWorkout
+npx supabase functions deploy parseWorkout
 
 # 3. Set the OpenAI secret (NEVER commit this value)
-supabase secrets set OPENAI_API_KEY=sk-...
+npx supabase secrets set OPENAI_API_KEY=sk-...
 ```
 
 ---
