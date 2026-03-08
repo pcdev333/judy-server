@@ -21,34 +21,44 @@ serve(async (req: Request) => {
   }
 
   // ── Authenticate the caller via Supabase JWT ──────────────────────────────
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return new Response(
-      JSON.stringify({ error: "Missing or invalid Authorization header." }),
-      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+  // SKIP_AUTH=true bypasses JWT verification for local development only.
+  // NEVER set this to true in production / deployed functions.
+  const skipAuth = Deno.env.get("SKIP_AUTH") === "true";
+
+  if (skipAuth) {
+    console.warn("WARNING: SKIP_AUTH is enabled — JWT authentication is bypassed. NEVER use this in production.");
   }
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!skipAuth) {
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return new Response(
+        JSON.stringify({ error: "Missing or invalid Authorization header." }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+      );
+    }
 
-  if (!supabaseUrl || !supabaseAnonKey) {
-    return new Response(
-      JSON.stringify({ error: "Server configuration error." }),
-      { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
-  }
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: { headers: { Authorization: authHeader } },
-  });
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return new Response(
+        JSON.stringify({ error: "Server configuration error." }),
+        { status: 500, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+      );
+    }
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return new Response(
-      JSON.stringify({ error: "Unauthorized." }),
-      { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
-    );
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized." }),
+        { status: 401, headers: { ...CORS_HEADERS, "Content-Type": "application/json" } },
+      );
+    }
   }
 
   // ── Parse request body ────────────────────────────────────────────────────
